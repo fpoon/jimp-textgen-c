@@ -3,22 +3,25 @@
 #     Author: mariusz
 
 CC=gcc
+CFLAGS=-g
+LDFLAGS=
 LIBS=
+MACROS=-D_DEBUG
 OBJS=main.o settings.o utilities.o
 
 .PHONY: all clean
 
 textgen: $(OBJS)
-		$(CC) $(OBJS) -o textgen
+		$(CC) $(CFLAGS) $(MACROS) $(OBJS) -o textgen $(LDFLAGS) $(LIBS)
 		
-main.o:
-	cc -c src/main.c
+main.o: src/main.c
+	$(CC) $(CFLAGS) $(MACROS) -c src/main.c
 
-settings.o:
-	cc -c src/settings.c
+settings.o: src/settings.c
+	$(CC) $(CFLAGS) $(MACROS) -c src/settings.c
 	
-utilities.o:
-	cc -c src/utilities.c
+utilities.o: src/utilities.c
+	$(CC) $(CFLAGS) $(MACROS) -c src/utilities.c
 
 all: textgen
 

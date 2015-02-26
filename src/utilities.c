@@ -6,8 +6,22 @@
  */
 
 #include <stdlib.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 #include "utilities.h"
+
+int debugLog(const char * fmt, ...)
+{
+	int ret = 0;
+#ifdef _DEBUG
+	va_list args;
+	va_start(args, fmt);
+	ret = vfprintf(stderr, fmt, args);
+	va_end(args);
+#endif
+	return ret;
+}
 
 List_t * addToList(List_t * list, void * val)
 {

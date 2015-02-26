@@ -8,12 +8,24 @@
 #include <stdio.h>
 
 #include "settings.h"
+#include "utilities.h";
 
 
 
 int main(int argc, const char * argv[])
 {
 	int error;
-	arguments(argc, argv);
+	Settings_t * settings = loadSettings(argc, argv);
+	error = settings->error_code;
+	if(error)
+	{
+		fprintf(stderr, "Błąd: %s", SETTINGS_FAILURES[settings->error_code]);
+		if(settings->fatal)
+		{
+			freeSettings(settings);
+			return error;
+		}
+	}
+	freeSettings(settings);
 	return 0;
 }

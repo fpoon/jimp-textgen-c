@@ -20,12 +20,22 @@ typedef enum
 	UNDEFINED_OUTPUT,
 	UNDEFINED_INPUT,
 	UNDEFINED_ARGUMENT,
+	CANNOT_OPEN_FILE,
 	UNKNOWN_FAILURE
 } SETTINGS_ERROR_CODES;
+
+typedef enum
+{
+	INPUT,
+	OUTPUT,
+	GRAMS,
+	STATISTICS,
+} ARGUMENTS;
 
 typedef struct
 {
 	int      error_code;
+	bool     fatal;
 	List_t * input;
 	FILE *   output;
 	int      grams;

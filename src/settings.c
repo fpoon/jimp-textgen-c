@@ -5,6 +5,7 @@
  *      Author: mariusz
  */
 
+#include <stdio.h>
 #include <string.h>
 
 #include "settings.h"
@@ -15,57 +16,88 @@ const char * SETTINGS_FAILURES[] = {
 										"Niezdefiniowane wyjście => wyjście na stdout",
 										"Nie podano plików wejściowych => zatrzymanie programu",
 										"Nieznany argument => zatrzymanie programu",
+										"Nie można otworzyć pliku => zatrzymanie programu",
 										"Nieznany błąd => zatrzymanie programu"
 };
 
 static int argument(const char * arg)
 {
-	if (strcmp(arg, "-i")) return 0;
-	if (strcmp(arg, "-o")) return 1;
-	if (strcmp(arg, "-g")) return 2;
-	if (strcmp(arg, "-s")) return 3;
+	if (!strcmp(arg, "-i")) return INPUT;
+	if (!strcmp(arg, "-o")) return OUTPUT;
+	if (!strcmp(arg, "-g")) return GRAMS;
+	if (!strcmp(arg, "-s")) return STATISTICS;
 
 	return -1;
 }
 
 Settings_t * loadSettings(int argc, const char * argv[])
 {
-	int i;
+	int i,a;
 	Settings_t * settings = malloc(sizeof(Settings_t));
 	FILE * file;
 
 	memset(settings, 0, sizeof(Settings_t));
+	settings->output = stdout;
+	settings->grams = 2;
+	settings->statistics = false;
 
 	for (i = 1; i < argc; i++)
 	{
-		switch (argument(argv[i]))
+		a = argument(argv[i]);
+		debugLog("Argument %s -> %s [%d]\n", argv[i], a < 0 ? "Błąd" : "OK", a);
+		switch (a)
 		{
-		case 0:
+		case INPUT:
 
 			while (++i < argc && argv[i][0] != '-')
 			{
+				debugLog("Otwieranie pliku %s\n", argv[i]);
 				file = fopen(argv[i], "r");
-				settings->input = (List_t *) addToList(settings->input, (void*)file);
+				if (file)
+				{
+					settings->input = (List_t *) addToList(settings->input, (void*)file);
+				}
+				else
+				{
+					settings->error_code = CANNOT_OPEN_FILE;
+					settings->fatal      = true;
+					return settings;
+				}
 			}
+			i--;
 
 			break;
 
-		case 1:
+		case OUTPUT:
 			if (++i < argc && argv[i][0] != '-')
+			{
+				debugLog("Zapis do %s\n", argv[i]);
 				settings->output = fopen(argv[i], "w");
-			else --i;
+				if (!settings->output)
+				{
+					settings->error_code = CANNOT_OPEN_FILE;
+					settings->fatal      = true;
+					return settings;
+				}
+			}
+			else
+				--i;
 			break;
 
-		case 2:
+		case GRAMS:
 			settings->grams = atoi(argv[++i]);
+			debugLog("Ustawiono %d-gram.\n",settings->grams);
 			break;
 
-		case 3:
+		case STATISTICS:
 			settings->statistics = true;
+			debugLog("Włączono wyświetlanie statystyki\n");
 			break;
 
 		default:
-			return UNDEFINED_ARGUMENT;
+			settings->error_code = UNDEFINED_ARGUMENT;
+			settings->fatal      = true;
+			return settings;
 		}
 	}
 

@@ -8,6 +8,8 @@
 #ifndef SRC_UTILITIES_H_
 #define SRC_UTILITIES_H_
 
+int debugLog(const char * fmt, ...);
+
 typedef enum {true, false} bool;
 
 typedef struct LIST_ELEMENT
