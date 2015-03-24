@@ -24,8 +24,11 @@ static int argument(const char * arg)
 {
 	if (!strcmp(arg, "-i")) return INPUT;
 	if (!strcmp(arg, "-o")) return OUTPUT;
+	if (!strcmp(arg, "-l")) return LENGHT;
 	if (!strcmp(arg, "-g")) return GRAMS;
 	if (!strcmp(arg, "-s")) return STATISTICS;
+	if (!strcmp(arg, "-db")) return DATABASE;
+	if (!strcmp(arg, "-dbo")) return DATABASE_OUTPUT;
 
 	return -1;
 }
@@ -55,14 +58,14 @@ Settings_t * loadSettings(int argc, const char * argv[])
 				file = fopen(argv[i], "r");
 				if (file)
 				{
-					settings->input = (List_t *) addToList(settings->input, (void*)file);
+					settings->input = (List_t *) addToList(settings->input, (void*)argv[i]);
 				}
-				else
+				/*else
 				{
 					settings->error_code = CANNOT_OPEN_FILE;
 					settings->fatal      = true;
 					return settings;
-				}
+				}*/
 			}
 			i--;
 
@@ -72,13 +75,14 @@ Settings_t * loadSettings(int argc, const char * argv[])
 			if (++i < argc && argv[i][0] != '-')
 			{
 				debugLog("Zapis do %s\n", argv[i]);
-				settings->output = fopen(argv[i], "w");
+				/*settings->output = fopen(argv[i], "w");
 				if (!settings->output)
 				{
 					settings->error_code = CANNOT_OPEN_FILE;
 					settings->fatal      = true;
 					return settings;
-				}
+				}*/
+				settings->output = argv[i];
 			}
 			else
 				--i;
@@ -109,8 +113,8 @@ void freeSettings(Settings_t * settings)
 	FILE * file;
 	int i = 0;
 
-	while(file = (FILE*)getFromList(settings->input, i++))
-		fclose(file);
+	/*while(file = (FILE*)getFromList(settings->input, i++))
+		fclose(file);*/
 
 	fclose(settings->output);
 

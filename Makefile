@@ -7,9 +7,10 @@ CFLAGS=-g
 LDFLAGS=
 LIBS=
 MACROS=-D_DEBUG
-OBJS=main.o settings.o utilities.o
+OBJS=main.o settings.o utilities.o markov.o database.o traintextanal.o 
 
-.PHONY: all clean
+# .PHONY: all clean
+all: textgen
 
 textgen: $(OBJS)
 		$(CC) $(CFLAGS) $(MACROS) $(OBJS) -o textgen $(LDFLAGS) $(LIBS)
@@ -22,8 +23,15 @@ settings.o: src/settings.c
 	
 utilities.o: src/utilities.c
 	$(CC) $(CFLAGS) $(MACROS) -c src/utilities.c
+	
+markov.o: src/markov.c
+	$(CC) $(CFLAGS) $(MACROS) -c src/markov.c
 
-all: textgen
+database.o: src/database.c
+	$(CC) $(CFLAGS) $(MACROS) -c src/database.c
+	
+traintextanal.o: src/traintextanal.c
+	$(CC) $(CFLAGS) $(MACROS) -c src/traintextanal.c
 
 clean:
 	rm -rf *.o textgen

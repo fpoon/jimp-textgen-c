@@ -8,8 +8,11 @@
 #include <stdio.h>
 
 #include "settings.h"
-#include "utilities.h";
-
+#include "utilities.h"
+#include "traintextanal.h"
+#include "markov.h"
+#include "ngrams.h"
+#include "database.h"
 
 
 int main(int argc, const char * argv[])
