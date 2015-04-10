@@ -51,4 +51,6 @@ Settings_t * loadSettings(int argc, const char * argv[]);
 
 void freeSettings(Settings_t * settings);
 
+extern Settings_t * settings;
+
 #endif /* SRC_SETTINGS_H_ */

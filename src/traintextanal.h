@@ -10,6 +10,8 @@
 
 #include "database.h"
 
-int analyzeTrainingText(const char * file, Database_t * db);
+#define BUFFER_SIZE 64
+
+int analyzeTrainingText(const char * path, Database_t * db);
 
 #endif /* SRC_TRAINTEXTANAL_H_ */

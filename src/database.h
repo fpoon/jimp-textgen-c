@@ -26,6 +26,7 @@ typedef struct
 
 typedef struct
 {
+	const char * path;
 	DB_Header_t header;
 	List_t      words;
 	List_t      ngrams;

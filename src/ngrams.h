@@ -21,9 +21,9 @@ typedef Word_t Suffix_t;
 
 typedef struct
 {
-	List_t prefixes;
-	int    instances;
-	List_t suffixes;
+	List_t * prefixes;
+	int      instances;
+	List_t * suffixes;
 } Ngram_t;
 
 #endif /* SRC_NGRAMS_H_ */

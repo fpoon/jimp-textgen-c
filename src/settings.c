@@ -11,6 +11,8 @@
 #include "settings.h"
 #include "utilities.h"
 
+Settings_t * settings;
+
 const char * SETTINGS_FAILURES[] = {
 										"OK",
 										"Niezdefiniowane wyjście => wyjście na stdout",
@@ -36,13 +38,13 @@ static int argument(const char * arg)
 Settings_t * loadSettings(int argc, const char * argv[])
 {
 	int i,a;
-	Settings_t * settings = malloc(sizeof(Settings_t));
+	Settings_t * _settings = malloc(sizeof(Settings_t));
 	FILE * file;
 
-	memset(settings, 0, sizeof(Settings_t));
-	settings->output = stdout;
-	settings->grams = 2;
-	settings->statistics = false;
+	memset(_settings, 0, sizeof(Settings_t));
+	_settings->output = stdout;
+	_settings->grams = 2;
+	_settings->statistics = false;
 
 	for (i = 1; i < argc; i++)
 	{
@@ -58,14 +60,16 @@ Settings_t * loadSettings(int argc, const char * argv[])
 				file = fopen(argv[i], "r");
 				if (file)
 				{
-					settings->input = (List_t *) addToList(settings->input, (void*)argv[i]);
+					_settings->input = (List_t *) addToList(_settings->input, (void*)argv[i]);
+					fclose(file);
 				}
-				/*else
+				else
 				{
-					settings->error_code = CANNOT_OPEN_FILE;
-					settings->fatal      = true;
-					return settings;
-				}*/
+					_settings->error_code = CANNOT_OPEN_FILE;
+					_settings->fatal      = true;
+					fclose(file);
+					return _settings;
+				}
 			}
 			i--;
 
@@ -82,30 +86,30 @@ Settings_t * loadSettings(int argc, const char * argv[])
 					settings->fatal      = true;
 					return settings;
 				}*/
-				settings->output = argv[i];
+				_settings->output = argv[i];
 			}
 			else
 				--i;
 			break;
 
 		case GRAMS:
-			settings->grams = atoi(argv[++i]);
-			debugLog("Ustawiono %d-gram.\n",settings->grams);
+			_settings->grams = atoi(argv[++i]);
+			debugLog("Ustawiono %d-gram.\n",_settings->grams);
 			break;
 
 		case STATISTICS:
-			settings->statistics = true;
+			_settings->statistics = true;
 			debugLog("Włączono wyświetlanie statystyki\n");
 			break;
 
 		default:
-			settings->error_code = UNDEFINED_ARGUMENT;
-			settings->fatal      = true;
-			return settings;
+			_settings->error_code = UNDEFINED_ARGUMENT;
+			_settings->fatal      = true;
+			return _settings;
 		}
 	}
 
-	return settings;
+	return _settings;
 }
 
 void freeSettings(Settings_t * settings)

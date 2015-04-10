@@ -67,7 +67,8 @@ void freeList(List_t * list)
 	while (next)
 	{
 		next = list->next;
-		free(list->val);
+		if (list->val)
+			free(list->val);
 		free(list);
 		list = next;
 	}

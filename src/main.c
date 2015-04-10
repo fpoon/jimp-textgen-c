@@ -18,7 +18,8 @@
 int main(int argc, const char * argv[])
 {
 	int error;
-	Settings_t * settings = loadSettings(argc, argv);
+	List_t * input;
+	settings = loadSettings(argc, argv);
 	error = settings->error_code;
 	if(error)
 	{
@@ -29,6 +30,14 @@ int main(int argc, const char * argv[])
 			return error;
 		}
 	}
+	input = settings->input;
+
+	while(input != NULL)
+	{
+		analyzeTrainingText((const char*)input->val, NULL);
+		input = input->next;
+	}
+
 	freeSettings(settings);
 	return 0;
 }

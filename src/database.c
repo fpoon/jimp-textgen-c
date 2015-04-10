@@ -9,10 +9,26 @@
 
 #include "database.h"
 #include "ngrams.h"
+#include "utilities.h"
+
+Database_t * openDB(const char * file)
+{
+	return NULL;
+}
+
+void flushDB(Database_t * db)
+{
+
+}
+
+void closeDB(Database_t * db)
+{
+	flushDB(db);
+}
 
 int addWordToDB(Database_t * db, const char * word)
 {
-	printf("Dodaję słowo do bazy danych\n");
+	debugLog("Dodaję słowo \"%s\" do bazy danych\n", word);
 	return 0;
 }
 
