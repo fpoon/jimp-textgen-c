@@ -21,5 +21,6 @@ typedef struct LIST_ELEMENT
 List_t * addToList(List_t * list, void * val);
 void * getFromList(List_t * list, int num);
 void freeList(List_t * list);
+char * searchStringList(List_t * list, char * str);
 
 #endif /* SRC_UTILITIES_H_ */

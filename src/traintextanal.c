@@ -36,15 +36,18 @@ static Ngram_t * addToNgram(Ngram_t * ngram, const char * word, int n)
 		memset((void*)ngram, 0, sizeof(Ngram_t));
 	}
 
-	v = malloc(strlen(word)+1);
-	memcpy(v, (const void*)word, strlen(word)+1);
-
 	if (n < settings->grams-1)
 	{
+		v = malloc(strlen(word)+1);
+		memcpy(v, (const void*)word, strlen(word)+1);
 		ngram->prefixes = addToList(ngram->prefixes, v);
 	}
 	else
 	{
+		v = malloc(strlen(word)+1+sizeof(Word_t));
+		memcpy(v+sizeof(Word_t), (const void*)word, strlen(word)+1);
+		((Word_t*)v)->word = v+sizeof(Word_t);
+		((Word_t*)v)->instances = 1;
 		ngram->suffixes = addToList(ngram->suffixes, v);
 	}
 

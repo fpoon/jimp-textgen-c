@@ -23,3 +23,18 @@ Ngram_t * newNgram()
 	memset((void*)ngram, 0, sizeof(List_t));
 	return ngram;
 }
+
+
+Word_t * searchWordList(List_t * list, char * str)
+{
+	if (!list)
+		return NULL;
+
+	while (list)
+	{
+		if(!strcmp(((Word_t *)list->val)->word, str))
+			return (Word_t *)list->val;
+		list = list->next;
+	}
+	return NULL;
+}

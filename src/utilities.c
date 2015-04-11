@@ -51,6 +51,21 @@ List_t * addToList(List_t * list, void * val)
 	return ret;
 }
 
+char * searchStringList(List_t * list, char * str)
+{
+	if (!list)
+		return NULL;
+
+	while (list)
+	{
+		if(!strcmp(list->val, str))
+			return (char*)list->val;
+		list = list->next;
+	}
+	return NULL;
+}
+
+
 void * getFromList(List_t * list, int num)
 {
 	int i = 0;
