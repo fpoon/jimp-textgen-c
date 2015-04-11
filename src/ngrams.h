@@ -26,4 +26,7 @@ typedef struct
 	List_t * suffixes;
 } Ngram_t;
 
+void freeNgram(Ngram_t * ngram);
+Ngram_t * newNgram();
+
 #endif /* SRC_NGRAMS_H_ */

@@ -32,6 +32,8 @@ typedef struct
 	List_t      ngrams;
 } Database_t;
 
+Database_t * openDB(const char * path);
+
 int addWordToDB(Database_t * db, const char * word);
 int addNgramToDB(Database_t * db, Ngram_t * ngram);
 

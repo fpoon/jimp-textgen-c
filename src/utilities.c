@@ -19,29 +19,41 @@ int debugLog(const char * fmt, ...)
 	va_start(args, fmt);
 	ret = vfprintf(stderr, fmt, args);
 	va_end(args);
+	//fflush(stderr);
 #endif
 	return ret;
 }
 
 List_t * addToList(List_t * list, void * val)
 {
+	//debugLog("L: %p \n", list);
+	int i = 0;
+	List_t * ret = list;
 	List_t * elem  = (List_t*) malloc(sizeof(List_t));
+	//debugLog("%p -> ", elem);
 
 	elem->next = NULL;
 	elem->val = val;
 
 	if (list == NULL)
-		list = elem;
-	else
 	{
-		while(list->next)
-			list = list->next;
-
-		list->next = elem;
+		//debugLog("N%d. %p elem: %s\n", i, elem, (char*)elem->val);
+		return elem;
 	}
 
+	while(list->next != NULL)
+	{
+		//debugLog("%d. %p elem: %s\n", i, list, (char*)list->val);
+		list = list->next;
+		i++;
+	}
 
-	return list;
+	list->next = elem;
+
+	//debugLog("%d. %p elem: %s\n", i, list->next, (char*)elem->val);
+
+
+	return ret;
 }
 
 void * getFromList(List_t * list, int num)
@@ -55,6 +67,7 @@ void * getFromList(List_t * list, int num)
 		if (i == num) return list->val;
 
 		list = list->next;
+		i++;
 	}
 
 	return NULL;

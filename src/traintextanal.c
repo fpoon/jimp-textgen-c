@@ -14,43 +14,59 @@
 #include "settings.h"
 #include "utilities.h"
 
-static List_t * initNgrams(int grams)
+static Ngram_t ** initNgrams(int grams)
 {
 	int i;
-	List_t * it = NULL;
-	for(i = 0; i < settings->grams; i++)
+	Ngram_t ** ret = (Ngram_t **) malloc(sizeof(Ngram_t*)*settings->grams);
+	memset(ret, 0, sizeof(Ngram_t*)*settings->grams);
+
+	for (i = 0; i < settings->grams; i++)
 	{
-		List_t * tmp = malloc(sizeof(List_t));
-		tmp->val =  NULL;
-		tmp->next = it;
-		it = tmp;
+		ret[i] = newNgram();
 	}
-	return it;
+
+	return ret;
 }
 
-static int addToNgram(Ngram_t * ngram, const char * word, int n)
+static Ngram_t * addToNgram(Ngram_t * ngram, const char * word, int n)
 {
 	void * v;
-	if (n >= settings->grams) return -1;
+
+	if (n >= settings->grams)
+		return NULL;
+
+	if (ngram == NULL)
+	{
+		ngram = (Ngram_t*) malloc(sizeof(Ngram_t));
+		memset((void*)ngram, 0, sizeof(Ngram_t));
+	}
 
 	v = malloc(strlen(word)+1);
 	memcpy(v, (const void*)word, strlen(word)+1);
 
 	if (n < settings->grams-1)
+	{
 		ngram->prefixes = addToList(ngram->prefixes, v);
+	}
 	else
+	{
 		ngram->suffixes = addToList(ngram->suffixes, v);
+	}
 
-	return 0;
+	return ngram;
 }
 
 int analyzeTrainingText(const char * path, Database_t * db)
 {
 	FILE * file;
 	int counter = 0;
+	int i,a;
 	char buffer[BUFFER_SIZE];
+	List_t * tmp, itable;
+	int * ngrams_cnt = (int*) malloc(settings->grams*(sizeof(int)));
 
-	List_t * ngrams = initNgrams(settings->grams);
+	memset(ngrams_cnt,0,settings->grams*(sizeof(int)));
+	Ngram_t ** ngrams = initNgrams(settings->grams);
 
 	debugLog("Otwieranie pliku %s\n", path);
 	file = fopen(path,"r");
@@ -58,13 +74,29 @@ int analyzeTrainingText(const char * path, Database_t * db)
 	while (fscanf(file, "%s", buffer) != EOF)
 	{
 		addWordToDB(db, buffer);
-		//addToNgram((Ngram_t*)ngrams->val, buffer, 0);
+
+		if (counter >= settings->grams)
+			a = settings->grams;
+		else
+			a = counter+1;
+
+		for (i = 0; i < a; i++)
+		{
+			ngrams[i] = addToNgram((Ngram_t*)ngrams[i], buffer, ngrams_cnt[i]++);
+			if (ngrams_cnt[i] >= settings->grams)
+			{
+				addNgramToDB(db, ngrams[i]);
+				//freeNgram(ngrams[i]);
+				ngrams[i] = newNgram();
+			}
+			ngrams_cnt[i] %= settings->grams;
+		}
+
+
 		counter++;
 	}
 
 	debugLog("Wczytano %d słów\n", counter);
-
-	freeList(ngrams);
 
 	fclose(file);
 	return 0;
