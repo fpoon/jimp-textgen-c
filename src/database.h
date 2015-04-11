@@ -11,6 +11,10 @@
 #include "ngrams.h"
 #include "utilities.h"
 
+#define DEFAULT_DATABASE_PATH "./database.db"
+#define DATABASE_MAGIC 0x41505544
+#define DATABASE_VERSION 0x1
+
 typedef struct
 {
 	int magic;
@@ -21,15 +25,15 @@ typedef struct
 	int ngrams;
 	int ngrams_section;
 
-	char reserved[96];
+	char reserved[100];
 } DB_Header_t;
 
 typedef struct
 {
 	const char * path;
-	DB_Header_t header;
-	List_t      words;
-	List_t      ngrams;
+	DB_Header_t  header;
+	List_t     * words;
+	List_t     * ngrams;
 } Database_t;
 
 Database_t * openDB(const char * path);

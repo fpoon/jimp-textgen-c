@@ -20,11 +20,6 @@ static Ngram_t ** initNgrams(int grams)
 	Ngram_t ** ret = (Ngram_t **) malloc(sizeof(Ngram_t*)*settings->grams);
 	memset(ret, 0, sizeof(Ngram_t*)*settings->grams);
 
-	for (i = 0; i < settings->grams; i++)
-	{
-		ret[i] = newNgram();
-	}
-
 	return ret;
 }
 

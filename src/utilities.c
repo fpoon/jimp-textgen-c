@@ -37,21 +37,16 @@ List_t * addToList(List_t * list, void * val)
 
 	if (list == NULL)
 	{
-		//debugLog("N%d. %p elem: %s\n", i, elem, (char*)elem->val);
 		return elem;
 	}
 
 	while(list->next != NULL)
 	{
-		//debugLog("%d. %p elem: %s\n", i, list, (char*)list->val);
 		list = list->next;
 		i++;
 	}
 
 	list->next = elem;
-
-	//debugLog("%d. %p elem: %s\n", i, list->next, (char*)elem->val);
-
 
 	return ret;
 }

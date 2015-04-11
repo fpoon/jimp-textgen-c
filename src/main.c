@@ -19,6 +19,7 @@ int main(int argc, const char * argv[])
 {
 	int error;
 	List_t * input;
+	Database_t * db;
 	settings = loadSettings(argc, argv);
 	error = settings->error_code;
 	if(error)
@@ -32,12 +33,19 @@ int main(int argc, const char * argv[])
 	}
 	input = settings->input;
 
+	db = openDB(NULL);
+
 	while(input != NULL)
 	{
-		analyzeTrainingText((const char*)input->val, NULL);
+		analyzeTrainingText((const char*)input->val, db);
 		input = input->next;
 	}
 
-	freeSettings(settings);
+	closeDB(db);
+
+	//freeSettings(settings);
+
+	debugLog("--THE END--\n");
+
 	return 0;
 }
