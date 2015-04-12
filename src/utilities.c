@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "utilities.h"
 
@@ -95,4 +96,32 @@ void freeList(List_t * list)
 		free(list);
 		list = next;
 	}
+}
+
+static void reallocString(String_t * str, int size)
+{
+	str->size = size;
+	str->str = realloc(str->str, (sizeof(char)*size)+1);
+}
+
+String_t * addToString(String_t * str, const char * word)
+{
+	if (str == NULL)
+	{
+		str = malloc(sizeof(String_t));
+		memset(str, 0, sizeof(String_t));
+	}
+	if (str->str == NULL)
+	{
+		reallocString(str, STRING_BASE_SIZE);
+	}
+	if (str->length + strlen(word) >= str->size)
+	{
+		reallocString(str, str->size* STRING_MULTIPLIER);
+	}
+
+	memcpy((void*)&(str->str[str->length]), (const void*)word, strlen(word)+1);
+	str->length = strlen(word)+1;
+
+	return str;
 }
