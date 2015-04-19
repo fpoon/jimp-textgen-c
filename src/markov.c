@@ -47,7 +47,7 @@ const char * createMarkovChain(Database_t * db, int length)
 		i++;
 	}
 
-	debugLog("%p\n",ngram);
+	//debugLog("%p\n",ngram);
 
 	ngram = (Ngram_t*)list->val;
 	list = ngram->prefixes;
@@ -72,7 +72,7 @@ const char * createMarkovChain(Database_t * db, int length)
 		//debugLog("Przejscie %d\n%s\n",i,text->str);
 		suf = getSuffix(ngram);
 		text = addToString(text, suf);
-		debugLog("Text: %s\n",text->str);
+		//debugLog("Text: %s\n",text->str);
 		list2 = addToList(list2, suf);
 		ngram = getNgramFromDB(db, list2);
 		if(!ngram)

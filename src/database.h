@@ -12,21 +12,29 @@
 #include "utilities.h"
 
 #define DEFAULT_DATABASE_PATH "./database.db"
-#define DATABASE_MAGIC 0x41505544
+#define DATABASE_MAGIC 0x564B524D
 #define DATABASE_VERSION 0x1
+
+typedef enum
+{
+	Valid = 0x0,
+	Invalid_magic,
+	Invalid_sections,
+	Invalid_ngrams
+} DB_ERRORS;
 
 typedef struct
 {
-	int magic;
-	int version;
-	int total_words;
-	int unique_words;
-	int words_section;
-	int ngrams_lenght;
-	int ngrams;
-	int ngrams_section;
+	int magic;         //0x00
+	int version;       //0x04
+	int total_words;   //0x08
+	int unique_words;  //0x0C
+	int words_section; //0x10
+	int ngrams_length; //0x14
+	int ngrams;        //0x18
+	int ngrams_section;//0x1C
 
-	char reserved[96];
+	char reserved[96]; //0x20
 } DB_Header_t;
 
 typedef struct

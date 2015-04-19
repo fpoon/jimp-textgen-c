@@ -36,7 +36,7 @@ int main(int argc, const char * argv[])
 	}
 	input = settings->input;
 
-	db = openDB(NULL);
+	db = openDB(DEFAULT_DATABASE_PATH);
 
 	while(input != NULL)
 	{

@@ -14,6 +14,16 @@
 #include "utilities.h"
 #include "settings.h"
 
+
+static int checkDB(DB_Header_t * header)
+{
+	if (header->magic != DATABASE_MAGIC) return Invalid_magic;
+	if (header->ngrams_length != settings->grams) return Invalid_ngrams;
+	if (header->words_section >= header->ngrams_section) return Invalid_sections;
+
+	return Valid;
+}
+
 static Database_t * createDB(const char * path)
 {
 	FILE * file;
@@ -36,6 +46,7 @@ static Database_t * createDB(const char * path)
 	db->header.version = DATABASE_VERSION;
 	db->header.words_section = sizeof(DB_Header_t);
 	db->header.ngrams_section = sizeof(DB_Header_t);
+	db->header.ngrams_length = settings->grams;
 	db->words = NULL;
 
 	fwrite((const void*)&db->header, sizeof(DB_Header_t), 1, file);
@@ -46,10 +57,23 @@ static Database_t * createDB(const char * path)
 	return db;
 }
 
+void printList(List_t * list)
+{
+	while(list)
+	{
+		debugLog("%p->%s\n", list->val, (const char*)list->val);
+		list=list->next;
+	}
+}
+
 Database_t * openDB(const char * path)
 {
 	FILE * file;
 	Database_t * db;
+	char * words;
+	Ngram_t * ngram;
+	Word_t * word;
+	int foo, i;
 
 	if (path == NULL)
 		return createDB(path);
@@ -57,11 +81,68 @@ Database_t * openDB(const char * path)
 	if (!(file = fopen(path, "rw")))
 		return createDB(path);
 
-	debugLog("Otwarto bazę danych %s.", path);
+	debugLog("Otwarto bazę danych %s\n", path);
 
 	db = (Database_t *)malloc(sizeof(Database_t));
 	memset(db, 0, sizeof(Database_t));
 	db->path = path;
+
+	fread(&db->header, sizeof(DB_Header_t), 1, file);
+
+	if (foo = checkDB(&db->header))
+	{
+		fprintf(stderr, "Błąd bazy danych: [%d]\n", foo);
+		free(db);
+		return NULL;
+	}
+
+	fseek(file, db->header.words_section, 0);
+
+	foo = db->header.ngrams_section-db->header.words_section;
+	words = malloc(sizeof(char)*foo);
+	fread(words, sizeof(char), foo, file);
+
+	fseek(file, db->header.ngrams_section, 0);
+
+	for(i = 0; i < foo; i += strlen(&words[i])+1)
+	{
+		db->words = addToList(db->words, &words[i]);
+	}
+
+	printList(db->words);
+
+	fseek(file, db->header.ngrams_section, 0);
+	do
+	{
+		ngram = newNgram();
+		debugLog("Wczytuję %d-gram: ", db->header.ngrams_length);
+		for (i = 0; i < db->header.ngrams_length-1; i++)
+		{
+			fread(&foo, sizeof(int), 1, file);
+			if(feof(file)) break;
+			ngram->prefixes = addToList(ngram->prefixes, words+foo-db->header.words_section);
+			debugLog("%s ", words+foo-db->header.words_section);
+		}
+		if(feof(file)) break;
+		fread(&foo, sizeof(int), 1, file);
+		ngram->instances = foo;
+		debugLog("x%d : ", foo);
+		fread(&foo, sizeof(int), 1, file);
+		while (foo != 0)
+		{
+			word = malloc(sizeof(Word_t));
+			word->word = words+foo-db->header.words_section;
+			debugLog("%s ", words+foo-db->header.words_section);
+			fread(&foo, sizeof(int), 1, file);
+			word->instances = foo;
+			debugLog("x%d ", foo);
+			ngram->suffixes = addToList(ngram->suffixes, word);
+			fread(&foo, sizeof(int), 1, file);
+		}
+		debugLog("\n");
+
+		db->ngrams = addToList(db->ngrams, ngram);
+	} while (!feof(file));
 
 
 
@@ -161,19 +242,19 @@ void flushDB(Database_t * db)
 void closeDB(Database_t * db)
 {
 	flushDB(db);
-	freeList(db->words);
+	//freeList(db->words);
 	//freeList(db->ngrams);
 }
 
 int addWordToDB(Database_t * db, const char * word)
 {
 	void * v;
-	debugLog("Dodaję słowo \"%s\" do bazy danych\n", word);
 	if(db)
 	{
 		db->header.total_words++;
 		if(!searchStringList(db->words, (char*)word))
 		{
+			debugLog("Dodaję słowo \"%s\" do bazy danych\n", word);
 			db->header.ngrams_section += strlen(word)+1;
 			v = malloc(strlen(word)+1);
 			memcpy(v, (const void*)word, strlen(word)+1);
@@ -215,6 +296,7 @@ int addNgramToDB(Database_t * db, Ngram_t * ngram)
 		else
 			ng->suffixes = addToList(ng->suffixes, ngram->suffixes->val);
 	}
+
 
 	return 0;
 }
