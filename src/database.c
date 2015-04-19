@@ -70,47 +70,88 @@ Database_t * openDB(const char * path)
 	return db;
 }
 
+String_t * makeWordsSection(Database_t * db)
+{
+	List_t * list = db->words;
+	String_t * words = NULL;
+	while (list)
+	{
+		debugLog("Zapisuję %s\n", (char *)list->val);
+		words = addToString(words, (const char *)list->val);
+		words = addToString2(words, "\0", 1);
+		list = list->next;
+	}
+	return words;
+}
+
+int getWordOffset(String_t * source, const char * val)
+{
+	int i = 0;
+	while(i < source->length)
+	{
+		if (!strcmp(val, &source->str[i])) return i;
+		i += strlen(&source->str[i])+1;
+	}
+	return -1;
+}
+
+void saveNgrams(Database_t * db, String_t * words, FILE * file)
+{
+	List_t * list, * list2;
+	int foo;
+
+	list = db->ngrams;
+
+		while (list)
+		{
+			list2 = ((Ngram_t*)list->val)->prefixes;
+			debugLog("Zapisuję %d-gram(%dx): ", settings->grams, ((Ngram_t*)list->val)->instances);
+			while (list2)
+			{
+				debugLog("%s ", (const char*)list2->val);
+				foo = getWordOffset(words, (const char*)list2->val) + db->header.words_section;
+				fwrite((const void *)&foo, sizeof(int), 1, file);
+				list2 = list2->next;
+			}
+
+			foo = ((Ngram_t*)list->val)->instances;
+			fwrite((const void *)&foo, sizeof(int), 1, file);
+
+			list2 = ((Ngram_t*)list->val)->suffixes;
+			debugLog("(");
+			while (list2)
+			{
+				debugLog("%d x %s, ",
+						((Word_t*)list2->val)->instances,
+						((Word_t*)list2->val)->word);
+				foo = getWordOffset(words, ((Word_t*)list2->val)->word)  + db->header.words_section;
+				fwrite((const void *)&foo, sizeof(int), 1, file);
+				foo = ((Word_t*)list2->val)->instances;
+				fwrite((const void *)&foo, sizeof(int), 1, file);
+				list2 = list2->next;
+			}
+
+			foo = 0;
+			fwrite((const void *)&foo, sizeof(int), 1, file);
+
+			debugLog(")\n");
+			list = list->next;
+		}
+}
+
 void flushDB(Database_t * db)
 {
 	FILE * file;
-	List_t * list = db->words;
-	List_t * list2;
+	String_t * words = NULL;
+	int foo,bar;
 	debugLog("Zapisywanie do bazy danych %s.\n", db->path);
 	file = fopen(db->path, "w");
 	fwrite((const void*)&db->header, sizeof(DB_Header_t), 1, file);
 
-	while (list)
-	{
-		debugLog("Zapisuję %s\n", (char *)list->val);
-		fwrite((const void *)list->val, sizeof(char), strlen((char *)list->val), file);
-		fputc(0, file);
-		list = list->next;
-	}
+	words = makeWordsSection(db);
+	fwrite((const void*)words->str, words->length, 1, file);
 
-	list = db->ngrams;
-
-	while (list)
-	{
-		list2 = ((Ngram_t*)list->val)->prefixes;
-		debugLog("Zapisuję %d-ngram(%dx): ", settings->grams, ((Ngram_t*)list->val)->instances);
-		while (list2)
-		{
-			debugLog("%s ", (const char*)list2->val);
-			list2 = list2->next;
-		}
-		list2 = ((Ngram_t*)list->val)->suffixes;
-		debugLog("(");
-		while (list2)
-		{
-			debugLog("%d x %s, ",
-					((Word_t*)list2->val)->instances,
-					((Word_t*)list2->val)->word);
-			list2 = list2->next;
-		}
-
-		debugLog(")\n");
-		list = list->next;
-	}
+	saveNgrams(db, words, file);
 
 	fclose(file);
 

@@ -29,5 +29,6 @@ typedef struct
 void freeNgram(Ngram_t * ngram);
 Ngram_t * newNgram();
 Word_t * searchWordList(List_t * list, char * str);
+Ngram_t * addToNgram(Ngram_t * ngram, const char * word, int n);
 
 #endif /* SRC_NGRAMS_H_ */

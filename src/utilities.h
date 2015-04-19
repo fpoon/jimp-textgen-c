@@ -33,4 +33,6 @@ void * getFromList(List_t * list, int num);
 void freeList(List_t * list);
 char * searchStringList(List_t * list, char * str);
 String_t * addToString(String_t * str, const char * word);
+String_t * addToString2(String_t * str, const char * word, int length);
+
 #endif /* SRC_UTILITIES_H_ */

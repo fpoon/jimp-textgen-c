@@ -127,3 +127,27 @@ String_t * addToString(String_t * str, const char * word)
 
 	return str;
 }
+
+String_t * addToString2(String_t * str, const char * word, int length)
+{
+	if (str == NULL)
+	{
+		str = malloc(sizeof(String_t));
+		memset(str, 0, sizeof(String_t));
+	}
+	if (str->str == NULL)
+	{
+		reallocString(str, STRING_BASE_SIZE);
+	}
+	if (str->length + length >= str->size)
+	{
+		reallocString(str, str->size* STRING_MULTIPLIER);
+	}
+
+	if (word == NULL) return str;
+
+	memcpy((void*)&(str->str[str->length]), (const void*)word, length+1);
+	str->length += length;
+
+	return str;
+}
