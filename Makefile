@@ -6,7 +6,8 @@ CC=gcc
 CFLAGS=-g
 LDFLAGS=
 LIBS=
-MACROS=-D_DEBUG
+#MACROS=-D_DEBUG
+MACROS=
 OBJS=main.o settings.o utilities.o markov.o database.o traintextanal.o ngrams.o
 
 # .PHONY: all clean

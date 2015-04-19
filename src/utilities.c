@@ -120,8 +120,10 @@ String_t * addToString(String_t * str, const char * word)
 		reallocString(str, str->size* STRING_MULTIPLIER);
 	}
 
+	if (word == NULL) return str;
+
 	memcpy((void*)&(str->str[str->length]), (const void*)word, strlen(word)+1);
-	str->length = strlen(word)+1;
+	str->length += strlen(word);
 
 	return str;
 }

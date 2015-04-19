@@ -107,6 +107,7 @@ void flushDB(Database_t * db)
 					((Word_t*)list2->val)->word);
 			list2 = list2->next;
 		}
+
 		debugLog(")\n");
 		list = list->next;
 	}

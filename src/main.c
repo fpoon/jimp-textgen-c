@@ -6,6 +6,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "settings.h"
 #include "utilities.h"
@@ -20,6 +22,7 @@ int main(int argc, const char * argv[])
 	int error;
 	List_t * input;
 	Database_t * db;
+	srand(time(NULL));
 	settings = loadSettings(argc, argv);
 	error = settings->error_code;
 	if(error)
@@ -40,6 +43,8 @@ int main(int argc, const char * argv[])
 		analyzeTrainingText((const char*)input->val, db);
 		input = input->next;
 	}
+
+	printf("%s\n\n",createMarkovChain(db, 100));
 
 	closeDB(db);
 
