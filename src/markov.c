@@ -35,6 +35,7 @@ const char * createMarkovChain(Database_t * db, int length)
 {
 	Ngram_t * ngram;
 	List_t * list = db->ngrams, *list2;
+	//debugLog("%d\n",db->header.ngrams);
 	int i=0,j, a = rand()%db->header.ngrams;
 	const char * suf;
 	String_t * text = NULL;
@@ -47,7 +48,7 @@ const char * createMarkovChain(Database_t * db, int length)
 		i++;
 	}
 
-	//debugLog("%p\n",ngram);
+	//debugLog("%p\n",list->val);
 
 	ngram = (Ngram_t*)list->val;
 	list = ngram->prefixes;

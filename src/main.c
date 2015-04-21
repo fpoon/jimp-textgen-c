@@ -59,10 +59,12 @@ int main(int argc, const char * argv[])
 	slog(" - %d wystąpień wyrazów;\n", db->header.total_words-foobar);
 	slog(" - %d nowych %d-gramów;\n", db->header.ngrams-bar, db->header.ngrams_length);
 
-	output = settings->output == NULL ? stdout : fopen(settings->output, "w");
+	if (settings->output)
+		output = fopen(settings->output, "w");
+	else output = stdout;
 
 	fprintf(output, "%s", createMarkovChain(db, settings->length));
-
+	printf("\n");
 	fclose(output);
 
 	closeDB(db);

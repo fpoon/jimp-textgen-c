@@ -41,7 +41,7 @@ Settings_t * loadSettings(int argc, const char * argv[])
 	FILE * file;
 
 	memset(_settings, 0, sizeof(Settings_t));
-	_settings->output = stdout;
+	_settings->output = NULL;
 	_settings->grams = 2;
 	_settings->statistics = false;
 	_settings->length = 100;
