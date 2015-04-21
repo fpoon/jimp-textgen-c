@@ -12,6 +12,7 @@
 #define STRING_MULTIPLIER 2
 
 int debugLog(const char * fmt, ...);
+int slog(const char * fmt, ...);
 
 typedef enum {true, false} bool;
 

@@ -63,7 +63,7 @@ int analyzeTrainingText(const char * path, Database_t * db)
 		counter++;
 	}
 
-	debugLog("Wczytano %d słów\n", counter);
+	slog("Plik %s: Wczytano %d słów\n", path, counter);
 
 	fclose(file);
 	return 0;

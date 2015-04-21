@@ -26,11 +26,10 @@ static int argument(const char * arg)
 {
 	if (!strcmp(arg, "-i")) return INPUT;
 	if (!strcmp(arg, "-o")) return OUTPUT;
-	if (!strcmp(arg, "-l")) return LENGHT;
+	if (!strcmp(arg, "-l")) return LENGTH;
 	if (!strcmp(arg, "-g")) return GRAMS;
 	if (!strcmp(arg, "-s")) return STATISTICS;
 	if (!strcmp(arg, "-db")) return DATABASE;
-	if (!strcmp(arg, "-dbo")) return DATABASE_OUTPUT;
 
 	return -1;
 }
@@ -45,6 +44,7 @@ Settings_t * loadSettings(int argc, const char * argv[])
 	_settings->output = stdout;
 	_settings->grams = 2;
 	_settings->statistics = false;
+	_settings->length = 100;
 
 	for (i = 1; i < argc; i++)
 	{
@@ -79,14 +79,17 @@ Settings_t * loadSettings(int argc, const char * argv[])
 			if (++i < argc && argv[i][0] != '-')
 			{
 				debugLog("Zapis do %s\n", argv[i]);
-				/*settings->output = fopen(argv[i], "w");
-				if (!settings->output)
-				{
-					settings->error_code = CANNOT_OPEN_FILE;
-					settings->fatal      = true;
-					return settings;
-				}*/
 				_settings->output = argv[i];
+			}
+			else
+				--i;
+			break;
+
+		case DATABASE:
+			if (++i < argc && argv[i][0] != '-')
+			{
+				debugLog("Baza danych %s\n", argv[i]);
+				_settings->database = argv[i];
 			}
 			else
 				--i;
@@ -97,9 +100,14 @@ Settings_t * loadSettings(int argc, const char * argv[])
 			debugLog("Ustawiono %d-gram.\n",_settings->grams);
 			break;
 
+		case LENGTH:
+				_settings->length = atoi(argv[++i]);
+				debugLog("Ustawiono długość %d.\n",_settings->length);
+				break;
+
 		case STATISTICS:
 			_settings->statistics = true;
-			debugLog("Włączono wyświetlanie statystyki\n");
+			debugLog("Włączono statystykę\n");
 			break;
 
 		default:
@@ -120,8 +128,8 @@ void freeSettings(Settings_t * settings)
 	/*while(file = (FILE*)getFromList(settings->input, i++))
 		fclose(file);*/
 
-	fclose(settings->output);
+	/*fclose(settings->output);
 
-	freeList(settings->input);
+	freeList(settings->input);*/
 	free(settings);
 }

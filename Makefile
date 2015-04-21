@@ -3,7 +3,7 @@
 #     Author: mariusz
 
 CC=gcc
-CFLAGS=-g
+CFLAGS= -O3
 LDFLAGS=
 LIBS=
 #MACROS=-D_DEBUG

@@ -47,6 +47,7 @@ static Database_t * createDB(const char * path)
 	db->header.words_section = sizeof(DB_Header_t);
 	db->header.ngrams_section = sizeof(DB_Header_t);
 	db->header.ngrams_length = settings->grams;
+	db->header.ngrams = 0;
 	db->words = NULL;
 
 	fwrite((const void*)&db->header, sizeof(DB_Header_t), 1, file);
@@ -144,7 +145,10 @@ Database_t * openDB(const char * path)
 		db->ngrams = addToList(db->ngrams, ngram);
 	} while (!feof(file));
 
-
+	slog("Zawartość bazy %s:\n", path);
+	slog(" - %d %d-gramów;\n", db->header.ngrams, db->header.ngrams_length);
+	slog(" - %d unikalnych wyrazów;\n", db->header.unique_words);
+	slog(" - Zanotowano %d dodań wyrazów;\n", db->header.total_words);
 
 	fclose(file);
 

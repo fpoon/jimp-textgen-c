@@ -28,11 +28,10 @@ typedef enum
 {
 	INPUT,
 	OUTPUT,
-	LENGHT,
+	LENGTH,
 	GRAMS,
 	STATISTICS,
-	DATABASE,
-	DATABASE_OUTPUT
+	DATABASE
 } ARGUMENTS;
 
 typedef struct
@@ -44,7 +43,7 @@ typedef struct
 	int            grams;
 	bool           statistics;
 	const char *   database;
-	const char *   odatabase;
+	int            length;
 } Settings_t;
 
 Settings_t * loadSettings(int argc, const char * argv[]);

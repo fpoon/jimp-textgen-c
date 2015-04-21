@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "settings.h"
 #include "utilities.h"
 
 int debugLog(const char * fmt, ...)
@@ -22,6 +23,19 @@ int debugLog(const char * fmt, ...)
 	va_end(args);
 	//fflush(stderr);
 #endif
+	return ret;
+}
+
+int slog(const char * fmt, ...)
+{
+	int ret = 0;
+	if (settings->statistics == true)
+	{
+		va_list args;
+		va_start(args, fmt);
+		ret = vfprintf(stdout, fmt, args);
+		va_end(args);
+	}
 	return ret;
 }
 

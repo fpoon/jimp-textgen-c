@@ -19,8 +19,9 @@
 
 int main(int argc, const char * argv[])
 {
-	int error;
+	int error, foo, bar, foobar;
 	List_t * input;
+	FILE * output;
 	Database_t * db;
 	srand(time(NULL));
 	settings = loadSettings(argc, argv);
@@ -34,9 +35,18 @@ int main(int argc, const char * argv[])
 			return error;
 		}
 	}
+	slog("Włączono wyświetlanie statystyki\n");
 	input = settings->input;
 
-	db = openDB(DEFAULT_DATABASE_PATH);
+	db = openDB(settings->database);
+	if (db == NULL)
+	{
+		fprintf(stderr, "Nie można otworzyć bazy danych!\n");
+		return -1;
+	}
+	foo = db->header.unique_words;
+	bar = db->header.ngrams;
+	foobar = db->header.total_words;
 
 	while(input != NULL)
 	{
@@ -44,11 +54,20 @@ int main(int argc, const char * argv[])
 		input = input->next;
 	}
 
-	printf("%s\n\n",createMarkovChain(db, 100));
+	slog("Do bazy danych %s dodano:\n", db->path);
+	slog(" - %d nowych wyrazów;\n", db->header.unique_words-foo);
+	slog(" - %d wystąpień wyrazów;\n", db->header.total_words-foobar);
+	slog(" - %d nowych %d-gramów;\n", db->header.ngrams-bar, db->header.ngrams_length);
+
+	output = settings->output == NULL ? stdout : fopen(settings->output, "w");
+
+	fprintf(output, "%s", createMarkovChain(db, settings->length));
+
+	fclose(output);
 
 	closeDB(db);
 
-	//freeSettings(settings);
+	freeSettings(settings);
 
 	debugLog("--THE END--\n");
 
