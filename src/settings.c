@@ -57,11 +57,11 @@ Settings_t * loadSettings(int argc, const char * argv[])
 			while (++i < argc && argv[i][0] != '-')
 			{
 				debugLog("Otwieranie pliku %s\n", argv[i]);
-				file = fopen(argv[i], "r");
+				/*file = fopen(argv[i], "r");
 				if (file)
-				{
+				{*/
 					_settings->input = (List_t *) addToList(_settings->input, (void*)argv[i]);
-					fclose(file);
+				/*	fclose(file);
 				}
 				else
 				{
@@ -69,7 +69,7 @@ Settings_t * loadSettings(int argc, const char * argv[])
 					_settings->fatal      = true;
 					fclose(file);
 					return _settings;
-				}
+				}*/
 			}
 			i--;
 

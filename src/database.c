@@ -77,7 +77,7 @@ Database_t * openDB(const char * path)
 	int foo, i;
 
 	if (path == NULL)
-		return createDB(path);
+		path = DEFAULT_DATABASE_PATH;
 
 	if (!(file = fopen(path, "rw")))
 		return createDB(path);
@@ -234,7 +234,7 @@ void flushDB(Database_t * db)
 	fwrite((const void*)&db->header, sizeof(DB_Header_t), 1, file);
 
 	words = makeWordsSection(db);
-	fwrite((const void*)words->str, words->length, 1, file);
+	if(words)fwrite((const void*)words->str, words->length, 1, file);
 
 	saveNgrams(db, words, file);
 

@@ -26,7 +26,7 @@ static const char * getSuffix(Ngram_t * ngram)
 		suf = ((Word_t*)list->val)->word;
 		start += ((Word_t*)list->val)->instances;
 		list = list->next;
-	} while (list && start < end);
+	} while (list && start <= end);
 
 	return suf;
 }
@@ -36,13 +36,16 @@ const char * createMarkovChain(Database_t * db, int length)
 	Ngram_t * ngram;
 	List_t * list = db->ngrams, *list2;
 	//debugLog("%d\n",db->header.ngrams);
-	int i=0,j, a = rand()%db->header.ngrams;
+	int i=0,j, a;
 	const char * suf;
 	String_t * text = NULL;
 
+	if (!db->header.ngrams) return "(null)";
+	a = rand()%db->header.ngrams;
+
 	//Wylosowanie początkowego n-gramu
 
-	while(list && i != a)
+	while(list->next && i != a)
 	{
 		list = list->next;
 		i++;

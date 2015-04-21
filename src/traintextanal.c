@@ -35,8 +35,12 @@ int analyzeTrainingText(const char * path, Database_t * db)
 	memset(ngrams_cnt,0,settings->grams*(sizeof(int)));
 	Ngram_t ** ngrams = initNgrams(settings->grams);
 
-	debugLog("Otwieranie pliku %s\n", path);
+	slog("Otwieranie pliku %s\n", path);
 	file = fopen(path,"r");
+	if (!file)
+	{
+		return -1;
+	}
 
 	while (fscanf(file, "%s", buffer) != EOF)
 	{

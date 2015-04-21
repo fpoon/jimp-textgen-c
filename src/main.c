@@ -65,13 +65,13 @@ int main(int argc, const char * argv[])
 
 	fprintf(output, "%s", createMarkovChain(db, settings->length));
 	printf("\n");
-	fclose(output);
+	//fclose(output);
 
 	closeDB(db);
 
-	freeSettings(settings);
+	//freeSettings(settings);
 
-	debugLog("--THE END--\n");
+	//printf("--THE END--\n");
 
 	return 0;
 }
